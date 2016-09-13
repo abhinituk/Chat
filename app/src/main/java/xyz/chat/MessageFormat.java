@@ -5,12 +5,15 @@ package xyz.chat;
  */
 public class MessageFormat {
     private String name;
-    private String message;
+    private String text;
 
+    public MessageFormat() {
+        super();
+    }
 
-    public MessageFormat(String name,String message) {
+    public MessageFormat(String name, String message) {
         this.name=name;
-        this.message=message;
+        this.text=message;
     }
 
 
@@ -23,10 +26,10 @@ public class MessageFormat {
     }
 
     public String getMessage() {
-        return message;
+        return text;
     }
 
     public void setMessage(String message) {
-        this.message = message;
+        this.text = message;
     }
 }
