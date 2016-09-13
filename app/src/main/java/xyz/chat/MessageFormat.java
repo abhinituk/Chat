@@ -24,12 +24,13 @@ public class MessageFormat {
     public void setName(String name) {
         this.name = name;
     }
+    public void setMessage(String message) {
+        this.text = message;
+    }
 
     public String getMessage() {
         return text;
     }
 
-    public void setMessage(String message) {
-        this.text = message;
-    }
+
 }

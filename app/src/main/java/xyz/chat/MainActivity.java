@@ -167,9 +167,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             @Override
             public void onClick(View v) {
                 //Perform the action here
-                MessageFormat messageFormat= new MessageFormat(mEditText.getText().toString(),
-                        mUsername);
-                mFirebaseDatabaseReference.child("messages").setValue(messageFormat);
+                MessageFormat messageFormat= new MessageFormat(mUsername,mEditText.getText().toString());
+                mFirebaseDatabaseReference.child("messages").push().setValue(messageFormat);
                 mEditText.setText("");
             }
         });

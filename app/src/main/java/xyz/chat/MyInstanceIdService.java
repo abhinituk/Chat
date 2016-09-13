@@ -11,7 +11,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
  */
 public class MyInstanceIdService  extends FirebaseInstanceIdService{
     private static final String TAG = "MyFirebaseIIDService";
-    private static final String FRIENDLY_ENGAGE_TOPIC = "messages";
+    private static final String FRIENDLY_ENGAGE_TOPIC = "engage";
 
     /**
      * The Application's current Instance ID token is no longer valid
