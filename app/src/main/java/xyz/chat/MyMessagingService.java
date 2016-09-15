@@ -14,8 +14,13 @@ public class MyMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         Log.d(TAG, "FCM Message Id: " + remoteMessage.getMessageId());
-        Log.d(TAG, "FCM Notification Message: " +
-                remoteMessage.getNotification());
+        Log.d(TAG, "FCM Notification Message: " + remoteMessage.getNotification().getBody());
         Log.d(TAG, "FCM Data Message: " + remoteMessage.getData());
+//        Toast.makeText(this,remoteMessage.getMessageId()+" "+
+//                remoteMessage.getNotification().getBody()+" "+
+//                remoteMessage.getData(),
+//                Toast.LENGTH_LONG).show();
+
+
     }
 }

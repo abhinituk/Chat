@@ -1,5 +1,6 @@
 package xyz.chat;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -25,6 +26,9 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -39,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private ProgressBar mProgressBar;
     private GoogleApiClient mGoogleApiClient;
     private String mUsername;
+    private Context mContext;
 
     // Firebase instance variables
     private FirebaseAuth mFirebaseAuth;
@@ -48,10 +53,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             mFirebaseAdapter;
 
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mContext=this;
 
         //Set the user name by default to anonymous
         mUsername= "Anonymous";
@@ -169,6 +177,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 //Perform the action here
                 MessageFormat messageFormat= new MessageFormat(mUsername,mEditText.getText().toString());
                 mFirebaseDatabaseReference.child("messages").push().setValue(messageFormat);
+                mFirebaseDatabaseReference.keepSynced(true);
                 mEditText.setText("");
             }
         });
@@ -185,6 +194,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             messengerTextView = (TextView) itemView.findViewById(R.id.messengerTextView);
         }
     }
+
+
 
 
     //Adding the sign out button to overflow menu
@@ -219,4 +230,53 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         Log.d(LOG_TAG, "onConnectionFailed:" + connectionResult);
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
     }
+
+
+    //Check for new messages whenever the app is in background
+    public void checkNewMessages()
+    {
+        mFirebaseDatabaseReference.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                //When the app is in background then get the push notification whenever new message arrives
+                if(Utility.isAppIsInBackground(mContext) && dataSnapshot.getChildrenCount()> mFirebaseAdapter.getItemCount())
+                {
+                    MessageFormat messageFormat= dataSnapshot.getValue(MessageFormat.class);
+                    String message = messageFormat.getMessage();
+                    String name = messageFormat.getName();
+                    Intent intent = new Intent(mContext,MyIntentService.class);
+                    intent.putExtra("Name",name);
+                    intent.putExtra("Message",message);
+                    startService(intent);
+                }
+            }
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        checkNewMessages();
+    }
+
 }
