@@ -16,7 +16,7 @@ public class MyIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         String message = intent.getStringExtra("Message");
-        String name= intent.getStringExtra("Name");
+        //String name= intent.getStringExtra("Name");
 
 
         //Clicking the notification launches the main activity
@@ -28,7 +28,7 @@ public class MyIntentService extends IntentService {
         NotificationCompat.Builder builder= new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle("Chat")
-                .setContentText(name+": "+message)
+                .setContentText(message)
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
 
         //Set the pending intent to builder

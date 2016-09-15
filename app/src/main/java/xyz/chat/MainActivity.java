@@ -52,6 +52,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private FirebaseRecyclerAdapter<MessageFormat, MessageViewHolder>
             mFirebaseAdapter;
 
+    private Boolean mAppBackground;
+
 
 
 
@@ -240,20 +242,24 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
                 //When the app is in background then get the push notification whenever new message arrives
-                if(Utility.isAppIsInBackground(mContext) && dataSnapshot.getChildrenCount()> mFirebaseAdapter.getItemCount())
-                {
-                    MessageFormat messageFormat= dataSnapshot.getValue(MessageFormat.class);
-                    String message = messageFormat.getMessage();
-                    String name = messageFormat.getName();
-                    Intent intent = new Intent(mContext,MyIntentService.class);
-                    intent.putExtra("Name",name);
-                    intent.putExtra("Message",message);
-                    startService(intent);
-                }
+                //if(Utility.isAppIsInBackground(mContext))
+
+
             }
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
+                if (mAppBackground)
+                {
+//                    Log.v(LOG_TAG,s);
+//                    MessageFormat messageFormat= dataSnapshot.getValue(MessageFormat.class);
+//                    String message = messageFormat.getMessage();
+//                    String name = messageFormat.getName();
+//                    Log.v(LOG_TAG,message);
+//                    Log.v(LOG_TAG,name);
+                    Intent intent = new Intent(mContext,MyIntentService.class);
+                    intent.putExtra("Message",dataSnapshot.toString());
+                    startService(intent);
+                }
             }
 
             @Override
@@ -271,12 +277,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
             }
         });
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        mAppBackground=true;
         checkNewMessages();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mAppBackground=false;
+    }
 }
